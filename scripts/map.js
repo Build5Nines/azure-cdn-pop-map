@@ -57,41 +57,35 @@
     }
   
     function loadRegions(jsonFileUrl, dataSource) {
-        
-      $.ajax({
-        url: jsonFileUrl,
-        dataType: 'json',
-        method: 'GET',
-        cache: false,
-         //error: function(xhr, msg, err) { alert(msg + '\n' + err); },
-        success: function(d) {
-  
-  
-          for(var i = 0; i < d.length; i++) {
-                                  var item = d[i];
-  
-                                  try {
-  
-                                      popups.push(new atlas.Popup({
-                                        content: '<div class="mapPopup"><strong>' + item.displayName + '</strong><br/>Latitude: ' + item.latitude + '<br/>Longitude: ' + item.longitude + '</div>',
-                                        position: [item.longitude, item.latitude],
-                                        pixelOffset: [0, -18]
-                                      }));
-                                      dataSource.add(new atlas.data.Feature(new atlas.data.Point([item.longitude, item.latitude]), {
-                                        popupIdx: popups.length - 1
-                                      }));
-                                      
-  
-                                  } catch(e) {
-                                      alert(e);
-                                  }
-  
-                              }
-  
-        }
-      });
-  
-      
+        $.ajax({
+            url: jsonFileUrl,
+            dataType: 'json',
+            method: 'GET',
+            cache: false,
+            //error: function(xhr, msg, err) { alert(msg + '\n' + err); },
+            success: function(d) {
+
+                if (Array.isArray(d)) {
+                    d.forEach((network) => {
+                        network.regions.forEach((region) => {
+                            region.locations.forEach((location) => {
+
+                                popups.push(new atlas.Popup({
+                                    content: '<div class="mapPopup"><strong>' + location.name + '</strong><br/>Latitude: ' + location.latitude + '<br/>Longitude: ' + location.longitude + '</div>',
+                                    position: [location.longitude, location.latitude],
+                                    pixelOffset: [0, -18]
+                                }));
+                                dataSource.add(new atlas.data.Feature(new atlas.data.Point([location.longitude, location.latitude]), {
+                                    popupIdx: popups.length - 1
+                                }));
+
+                            });
+                        });
+                    });
+                }
+
+            }
+        });
     }
     
   
